@@ -1,24 +1,53 @@
 package DefinitelyStolenGame;
 import java.util.*;
 
+// -------------------------------------------------------------------------
+/**
+ *  Helper class with a few methods for typing convenience
+ * 
+ *  @author chens
+ *  @version 2026.10.2
+ */
 public final class ToolClass
 {
+    // ----------------------------------------------------------
+    /**
+     * Quick print without next line
+     * @param txt
+     */
     public static void print(String txt)
     {
         System.out.print(txt);
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Quick println with next line
+     * @param txt
+     */
     public static void println(String txt)
     {
         System.out.println(txt);
     }
     
+    // ----------------------------------------------------------
+    /**
+     * Quick random integer generator
+     * @param min
+     * @param max
+     * @return random number
+     */
     public static int randomInt(int min, int max) {
         return (int)(Math.random() * (max - min + 1)) + min;
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Prompt user to enter a name for the shop
+     * @return name
+     */
     @SuppressWarnings("resource")
     public static String askName()
     {
@@ -56,6 +85,15 @@ public final class ToolClass
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * Prompt user to type in an integer as choosing options
+     * @param prompt
+     * @param min
+     * @param max
+     * @return the option #
+     */
+    @SuppressWarnings("resource")
     public static int askOption(String prompt, int min, int max)
     {
         int option = -1;
