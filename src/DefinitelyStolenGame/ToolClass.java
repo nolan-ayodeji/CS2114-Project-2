@@ -25,7 +25,7 @@ public final class ToolClass
         String name = "";
         while (true)
         {
-            println("\nEnter your name:");
+            println("\nEnter the name of your Shop:");
             try
             {
                 name = new Scanner(System.in).nextLine();
