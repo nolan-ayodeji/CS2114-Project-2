@@ -1,10 +1,11 @@
+package DefinitelyStolenGame;
+import static DefinitelyStolenGame.ToolClass.*;
 public class Main
 {
 
     public static void main(String[] args)
     {
-        // TODO Auto-generated method stub
-
+        println("Hello World");
     }
     //~ Fields ................................................................
 
