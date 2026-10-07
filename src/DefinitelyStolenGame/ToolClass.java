@@ -10,6 +10,14 @@ import java.util.*;
  */
 public final class ToolClass
 {
+    private static ArrayList<String> shopOptions = new ArrayList<String>();
+    
+    static
+    {
+        shopOptions.add("Next Customer");
+        shopOptions.add("Check Inventory");
+    }
+    
     // ----------------------------------------------------------
     /**
      * Quick print without next line
@@ -30,6 +38,28 @@ public final class ToolClass
     {
         System.out.println(txt);
     }
+
+
+    public static void addOptions(String opt) {
+        shopOptions.add(opt);
+    }
+    
+    public static String[] getOptions() {
+        String[] currOpt = shopOptions.toArray(new String[0]);
+        return currOpt;
+    }
+    
+    public static String[] getTempOptions(String[] tempOpt) {
+        String[] currOpt = shopOptions.toArray(new String[0]);
+        String[] newOpt = new String[tempOpt.length + currOpt.length];
+        for (int i = 0; i < tempOpt.length; i++) {
+            newOpt[i] = tempOpt[i];
+        }
+        for (int i = 0; i < currOpt.length; i++) {
+            newOpt[i + tempOpt.length] = currOpt[i];
+        }
+        return newOpt;
+    }
     
     // ----------------------------------------------------------
     /**
@@ -40,6 +70,17 @@ public final class ToolClass
      */
     public static int randomInt(int min, int max) {
         return (int)(Math.random() * (max - min + 1)) + min;
+    }
+    
+ // ----------------------------------------------------------
+    /**
+     * Quick random need generator
+     * @return String need
+     */
+    public static String randomNeed() {
+        String[] allNeeds = {"Food", "Daily Necessity", "Medical", "Electronic"};
+        int rndIndex = randomInt(0, allNeeds.length - 1);
+        return allNeeds[rndIndex];
     }
 
 
@@ -54,7 +95,7 @@ public final class ToolClass
         String name = "";
         while (true)
         {
-            println("\nEnter the name of your Shop:");
+            println("Enter the name of your Shop:");
             try
             {
                 name = new Scanner(System.in).nextLine();
@@ -100,6 +141,45 @@ public final class ToolClass
         while (true)
         {
             println(prompt);
+            print("\n> ");
+            try
+            {
+                option = new Scanner(System.in).nextInt();
+            }
+            catch (NullPointerException e)
+            {
+                println("Please enter a number.");
+                continue;
+            }
+            catch (InputMismatchException e)
+            {
+                println("Please enter a valid integer.");
+                continue;
+            }
+            if (option < min)
+            {
+                println("Please enter an integer no less than " + min + ".");
+            }
+            else if (option > max)
+            {
+                println("Please enter an integer no more than " + max + ".");
+            }
+            else {
+                break;
+            }
+        }
+        return option;
+    }
+    
+    @SuppressWarnings("resource")
+    public static int askOption(String[] options, int min, int max)
+    {
+        int option = -1;
+        while (true)
+        {
+            for (int i = 0; i < options.length; i++) {
+                println("" + (i + 1) + ": " + options[i]);
+            }
             print("\n> ");
             try
             {

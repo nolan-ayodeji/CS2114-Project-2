@@ -1,17 +1,17 @@
 package DefinitelyStolenGame;
-
-import static DefinitelyStolenGame.ToolClass.randomInt;
+import static DefinitelyStolenGame.ToolClass.*;
 
 /**
  * Manages the visitors for one day of the game.
  */
 public class GameSystem
 {
-    private static int visitorNum = 5;
+    private int visitorNum;
     private LinkedChain<Visitor> visitors;
 
-    public GameSystem()
+    public GameSystem(int visitorNum)
     {
+        this.visitorNum = visitorNum;
         visitors = new LinkedChain<>();
     }
 
@@ -47,13 +47,14 @@ public class GameSystem
      */
     private Visitor generateRandomVisitor(int number)
     {
-        String name = "Visitor " + number;
-        String dialogue = ""; // Dialogue will be added later
-        
         // Generate buyer or seller randomly
         if (randomInt(0, 1) == 0)
         {
-            return new Buyer(name, dialogue, randomInt(50, 200));
+            String name = "Lower District Resident";
+            String need = randomNeed();
+            int budget = randomInt(50, 200);
+            String dialogue = "I need some " + need + ". Do you have any? I only have " + budget + " bucks.";
+            return new Buyer(name, dialogue, need, budget);
         }
 
         LinkedChain<Item> sellerInventory = new LinkedChain<>();
@@ -63,6 +64,8 @@ public class GameSystem
             int itemIndex = randomInt(0, availableItems.length - 1);
             sellerInventory.add(new Item(availableItems[itemIndex]));
         }
+        String name = "Scavenger";
+        String dialogue = "I found some good stuff, want to take a look? I’ll give you 30% off the wholesale price if you buy everything.";
         return new Seller(name, dialogue, sellerInventory);
     }
 }
