@@ -35,10 +35,10 @@ public class Main
         while (true)
         {
             // TODO: Add events that happen before the shop opens each day.
+            visitorLeft = visitorNum;
             displayShop();
             askPlayerAction(new String[] { "Open the shop." });
             gameSystem.startDay();
-            visitorLeft = visitorNum;
 
             while (gameSystem.hasVisitors())
             {

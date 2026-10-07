@@ -184,7 +184,7 @@ public final class ToolClass
         while (true)
         {
             for (int i = 0; i < options.length; i++) {
-                println("" + (i + 1) + ": " + options[i]);
+                println("[" + (i + 1) + "] " + options[i]);
             }
             print("\n> ");
             try

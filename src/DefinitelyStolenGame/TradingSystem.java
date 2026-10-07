@@ -94,7 +94,7 @@ public class TradingSystem
             seller.show();
             println("Enter item numbers to buy. Separate multiple item numbers"
                 + " with commas, without spaces (e.g. 1,2,3).");
-            println("0: Buy everything at the wholesale price\n-1: Exit Counter");
+            println("[0] Buy everything at the wholesale price\n[-1] Exit Counter");
             String input = readInput();
             if ("-1".equals(input))
             {
@@ -197,7 +197,7 @@ public class TradingSystem
             displayInventory(listed);
             println("Enter item numbers to list or unlist. Separate multiple item"
                 + " numbers with commas, without spaces (e.g. 1,2,3).");
-            println("0: Review Transaction\n-1: Exit Counter");
+            println("[0] Review Transaction\n[-1] Exit Counter");
             String input = readInput();
             if ("-1".equals(input))
             {
@@ -256,7 +256,7 @@ public class TradingSystem
                 total += item.getSellingPrice();
             }
             println("Total: " + total + "G");
-            int action = askOption("1: Confirm Transaction\n-1: Exit Transaction",
+            int action = askOption("[1] Confirm Transaction\n[-1] Exit Transaction",
                 -1, 1);
             if (action == -1)
             {
@@ -272,7 +272,7 @@ public class TradingSystem
                 buyer.say("I've only got " + buyer.getBudget()
                     + "G left. That's all I can pay, even for the whole lot."
                     + " Still want to sell it all?");
-                if (askOption("1: Confirm Transaction\n2: Cancel Transaction",
+                if (askOption("[1] Confirm Transaction\n[2] Cancel Transaction",
                     1, 2) == 2)
                 {
                     continue;
