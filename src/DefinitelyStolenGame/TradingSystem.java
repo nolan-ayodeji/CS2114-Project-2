@@ -7,7 +7,6 @@ public class TradingSystem
 {
     private LinkedChain<Item> inventory;
     private int coins;
-    private LinkedChain<Item> activeListing;
 
     public TradingSystem(LinkedChain<Item> inventory, int coins)
     {
@@ -30,11 +29,12 @@ public class TradingSystem
             String action = options[choice - 1];
             if ("Check Inventory".equals(action))
             {
-                displayInventory(activeListing);
+                browseInventory();
             }
             else if ("Check Coins".equals(action))
             {
                 println("Coins: " + coins + "G");
+                askOption("[-1] Back to store", -1, -1);
             }
             else
             {
@@ -45,20 +45,13 @@ public class TradingSystem
 
     public void serveVisitor(Visitor visitor)
     {
-        try
+        if (visitor instanceof Seller)
         {
-            if (visitor instanceof Seller)
-            {
-                serveSeller((Seller)visitor);
-            }
-            else if (visitor instanceof Buyer)
-            {
-                serveBuyer((Buyer)visitor);
-            }
+            serveSeller((Seller)visitor);
         }
-        finally
+        else if (visitor instanceof Buyer)
         {
-            activeListing = null;
+            serveBuyer((Buyer)visitor);
         }
     }
 
@@ -68,8 +61,7 @@ public class TradingSystem
         while (!seller.getItems().isEmpty())
         {
             seller.say(dialogue);
-            seller.say("Buy the whole lot and I'll take 30% off. That's "
-                + seller.getWholesalePrice() + "G in total.");
+            seller.say("Buy the whole lot and I'll take 30% off.");
             int action = askPlayerAction(new String[] {
                 "View Counter", "Dismiss Customer"});
             if (action == 2)
@@ -91,10 +83,11 @@ public class TradingSystem
     {
         while (true)
         {
-            seller.show();
-            println("Enter item numbers to buy. Separate multiple item numbers"
+            println("Enter item numbers to buy.\nSeparate multiple item numbers"
                 + " with commas, without spaces (e.g. 1,2,3).");
-            println("[0] Buy everything at the wholesale price\n[-1] Exit Counter");
+            seller.show();
+            println("[0] Buy everything(" + seller.getWholesalePrice() + "G)");
+            println("[-1] Exit Counter");
             String input = readInput();
             if ("-1".equals(input))
             {
@@ -129,7 +122,7 @@ public class TradingSystem
         }
     }
 
-    /** Validates the entire purchase before moving any money or goods. */
+    // Validates the entire purchase before moving any money or goods.
     public boolean buyItems(Seller seller, LinkedChain<Item> purchase)
     {
         Item[] items = purchase.toArray(new Item[purchase.size()]);
@@ -169,7 +162,6 @@ public class TradingSystem
     {
         // Listing state lasts for this visit, including exits from either screen.
         LinkedChain<Item> listed = new LinkedChain<>();
-        activeListing = listed;
         String dialogue = buyer.getDialogue();
         while (buyer.getBudget() > 0)
         {
@@ -194,10 +186,11 @@ public class TradingSystem
     {
         while (true)
         {
-            displayInventory(listed);
-            println("Enter item numbers to list or unlist. Separate multiple item"
+            println("Enter item numbers to list or unlist.\nSeparate multiple item"
                 + " numbers with commas, without spaces (e.g. 1,2,3).");
-            println("[0] Review Transaction\n[-1] Exit Counter");
+            displayInventory(listed);
+            println("[0] Review Transaction");
+            println("[-1] Exit Counter");
             String input = readInput();
             if ("-1".equals(input))
             {
@@ -244,7 +237,7 @@ public class TradingSystem
         }
     }
 
-    /** -1 returns to the shop, leaving the listing intact. */
+    // -1 returns to the shop, leaving the listing intact.
     private boolean reviewSale(Buyer buyer, LinkedChain<Item> listed)
     {
         while (true)
@@ -252,7 +245,7 @@ public class TradingSystem
             int total = 0;
             for (Item item : listed.toArray(new Item[listed.size()]))
             {
-                println(item.getName() + " " + item.getSellingPrice() + "G");
+                println(" - " + item.getName() + " " + item.getSellingPrice() + "G");
                 total += item.getSellingPrice();
             }
             println("Total: " + total + "G");
@@ -270,7 +263,7 @@ public class TradingSystem
             if (total > buyer.getBudget())
             {
                 buyer.say("I've only got " + buyer.getBudget()
-                    + "G left. That's all I can pay, even for the whole lot."
+                    + "G left. That's all I can pay."
                     + " Still want to sell it all?");
                 if (askOption("[1] Confirm Transaction\n[2] Cancel Transaction",
                     1, 2) == 2)
@@ -325,7 +318,7 @@ public class TradingSystem
         return true;
     }
 
-    /** Each physical item has its own number, even when names are identical. */
+    /** Shows counter items at their selling prices, retaining listing markers. */
     public void displayInventory(LinkedChain<Item> listed)
     {
         println("Inventory:");
@@ -339,7 +332,41 @@ public class TradingSystem
             Item item = items[i];
             String marker = listed != null && listed.contains(item) ? " (Listed)" : "";
             println("[" + (i + 1) + "] " + item.getName() + " "
-                + item.getValue() + "G" + marker);
+                + item.getSellingPrice() + "G" + marker);
+        }
+    }
+
+    /** Browses names and item details without changing the current listing. */
+    public void browseInventory()
+    {
+        Item[] items = inventory.toArray(new Item[inventory.size()]);
+        while (true)
+        {
+            println("Inventory:");
+            if (items.length == 0)
+            {
+                println("(empty)");
+            }
+            for (int i = 0; i < items.length; i++)
+            {
+                println("[" + (i + 1) + "] " + items[i].getName());
+            }
+            int choice = askOption("[-1] Back to store", -1, items.length);
+            if (choice == -1)
+            {
+                return;
+            }
+            if (choice == 0)
+            {
+                println("Choose an item number or -1 to return to the store.");
+                continue;
+            }
+            Item item = items[choice - 1];
+            println(item.getName());
+            println("Base price: " + item.getValue() + "G");
+            println(item.getDescription());
+            println("");
+            askOption("[-1] Back to inventory", -1, -1);
         }
     }
 

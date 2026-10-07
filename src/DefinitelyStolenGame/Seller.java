@@ -1,4 +1,5 @@
 package DefinitelyStolenGame;
+import static DefinitelyStolenGame.ToolClass.*;
 
 public class Seller extends Visitor
 {
@@ -26,14 +27,12 @@ public class Seller extends Visitor
         return (int)Math.round(total * WHOLESALE_RATE);
     }
 
-    /** Displays the remaining goods using their current counter numbers. */
+    /** Displays numbered goods at their base purchase prices. */
     public void show() {
         Item[] items = inventory.toArray(new Item[inventory.size()]);
         for (int i = 0; i < items.length; i++) {
-            ToolClass.println("[" + (i + 1) + "] " + items[i].getName()
+            println("[" + (i + 1) + "] " + items[i].getName()
                 + " " + items[i].getValue() + "G");
         }
-        ToolClass.println("Buy everything: " + getWholesalePrice()
-            + "G (30% off).");
     }
 }

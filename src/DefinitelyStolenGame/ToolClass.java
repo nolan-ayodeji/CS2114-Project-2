@@ -147,7 +147,7 @@ public final class ToolClass
         while (true)
         {
             println(prompt);
-            print("\n> ");
+            print("> ");
             try
             {
                 option = Integer.parseInt(readInput());

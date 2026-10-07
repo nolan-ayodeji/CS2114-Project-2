@@ -75,7 +75,7 @@ public class Main
      */
     public static void displayInventory()
     {
-        tradingSystem.displayInventory(null);
+        tradingSystem.browseInventory();
     }
     
     public static void displayShop() {
