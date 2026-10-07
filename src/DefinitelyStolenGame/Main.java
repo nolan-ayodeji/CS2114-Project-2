@@ -4,7 +4,7 @@ import static DefinitelyStolenGame.ToolClass.*;
 public class Main
 {
     private static String shopName;
-    private static int coin;
+    private static TradingSystem tradingSystem;
     private static int day;
     private static LinkedChain<Item> inventory;
     private static int visitorNum;
@@ -12,35 +12,47 @@ public class Main
     
     public static void main(String[] args)
     {
+        try
+        {
+            runGame();
+        }
+        catch (java.util.NoSuchElementException e)
+        {
+            println("Input closed. Game ended.");
+        }
+    }
+
+    private static void runGame()
+    {
         shopName = askName();
-        coin = 500;
         day = 1;
         visitorNum = 5;
         inventory = new LinkedChain<>();
         initializeInventory();
+        tradingSystem = new TradingSystem(inventory, 500);
 
         GameSystem gameSystem = new GameSystem(visitorNum);
         while (true)
         {
             // TODO: Add events that happen before the shop opens each day.
+            displayShop();
+            askPlayerAction(new String[] { "Open the shop." });
             gameSystem.startDay();
             visitorLeft = visitorNum;
 
             while (gameSystem.hasVisitors())
             {
+                displayShop();
+                askPlayerAction(new String[] { "Next Customer" });
                 Visitor visitor = gameSystem.nextVisitor();
-                println(visitor.getName() + " arrived.");
-                // TODO: Add dialogue and trading actions for this visitor.
-                askPlayerAction(new String[0]);
                 visitorLeft--;
+                println(visitor.getName() + " arrived.");
+                tradingSystem.serveVisitor(visitor);
             }
 
             println("All visitors are done.");
             String[] closeOption = {"Close the shop."};
-            while (askPlayerAction(closeOption) != 1)
-            {
-                println("There are no more customers. Close the shop to continue.");
-            }
+            askPlayerAction(closeOption);
             // TODO: Add events that happen after the player closes the shop.
             day++;
         }
@@ -55,19 +67,7 @@ public class Main
      */
     public static int askPlayerAction(String[] temporaryOptions)
     {
-        String[] options = getTempOptions(temporaryOptions);
-        while (true)
-        {
-            int choice = askOption(options, 1, options.length);
-            if ("Check Inventory".equals(options[choice - 1]))
-            {
-                displayInventory();
-            }
-            else
-            {
-                return choice;
-            }
-        }
+        return tradingSystem.askPlayerAction(temporaryOptions);
     }
 
     /**
@@ -75,22 +75,12 @@ public class Main
      */
     public static void displayInventory()
     {
-        println("Inventory:");
-        if (inventory.isEmpty())
-        {
-            println("(empty)");
-            return;
-        }
-        for (int i = 0; i < inventory.size(); i++)
-        {
-            Item item = inventory.get(i);
-            println((i + 1) + ". " + item.getName() + " - $" + item.getValue());
-        }
+        tradingSystem.displayInventory(null);
     }
     
     public static void displayShop() {
         println("[" + shopName + "]   Day: " + day);
-        println("" + visitorLeft + " customer left.");
+        println("" + visitorLeft + " customers waiting.");
     }
     
     

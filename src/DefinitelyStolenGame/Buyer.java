@@ -16,4 +16,11 @@ public class Buyer extends Visitor
     public int getBudget() {
         return budget;
     }
+
+    public void spend(int amount) {
+        if (amount < 0 || amount > budget) {
+            throw new IllegalArgumentException("Payment exceeds remaining budget.");
+        }
+        budget -= amount;
+    }
 }

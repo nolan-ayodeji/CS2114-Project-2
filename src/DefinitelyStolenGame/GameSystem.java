@@ -53,7 +53,8 @@ public class GameSystem
             String name = "Lower District Resident";
             String need = randomNeed();
             int budget = randomInt(50, 200);
-            String dialogue = "I need some " + need + ". Do you have any? I only have " + budget + " bucks.";
+            String dialogue = "Hey, got " + describeNeed(need) + "? I've got "
+                + budget + "G to spend.";
             return new Buyer(name, dialogue, need, budget);
         }
 
@@ -65,7 +66,25 @@ public class GameSystem
             sellerInventory.add(new Item(availableItems[itemIndex]));
         }
         String name = "Scavenger";
-        String dialogue = "I found some good stuff, want to take a look? I’ll give you 30% off the wholesale price if you buy everything.";
+        String dialogue = "Picked up some good stuff. Wanna take a look?";
         return new Seller(name, dialogue, sellerInventory);
+    }
+
+    /** Gives spoken names to the categories used for item matching. */
+    private String describeNeed(String need)
+    {
+        switch (need)
+        {
+            case "Food":
+                return "something to eat";
+            case "Daily Necessity":
+                return "a few everyday basics";
+            case "Medical":
+                return "any medical supplies";
+            case "Electronic":
+                return "any electronics";
+            default:
+                return need.toLowerCase();
+        }
     }
 }

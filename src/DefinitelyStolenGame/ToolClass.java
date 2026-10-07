@@ -11,11 +11,12 @@ import java.util.*;
 public final class ToolClass
 {
     private static ArrayList<String> shopOptions = new ArrayList<String>();
+    private static final Scanner input = new Scanner(System.in);
     
     static
     {
-        shopOptions.add("Next Customer");
         shopOptions.add("Check Inventory");
+        shopOptions.add("Check Coins");
     }
     
     // ----------------------------------------------------------
@@ -37,6 +38,11 @@ public final class ToolClass
     public static void println(String txt)
     {
         System.out.println(txt);
+    }
+
+    /** Uses one scanner so repeated menus do not lose buffered input. */
+    public static String readInput() {
+        return input.nextLine().trim();
     }
 
 
@@ -98,7 +104,7 @@ public final class ToolClass
             println("Enter the name of your Shop:");
             try
             {
-                name = new Scanner(System.in).nextLine();
+                name = readInput();
 
             }
             catch (NullPointerException e)
@@ -144,14 +150,14 @@ public final class ToolClass
             print("\n> ");
             try
             {
-                option = new Scanner(System.in).nextInt();
+                option = Integer.parseInt(readInput());
             }
             catch (NullPointerException e)
             {
                 println("Please enter a number.");
                 continue;
             }
-            catch (InputMismatchException e)
+            catch (NumberFormatException e)
             {
                 println("Please enter a valid integer.");
                 continue;
@@ -183,14 +189,14 @@ public final class ToolClass
             print("\n> ");
             try
             {
-                option = new Scanner(System.in).nextInt();
+                option = Integer.parseInt(readInput());
             }
             catch (NullPointerException e)
             {
                 println("Please enter a number.");
                 continue;
             }
-            catch (InputMismatchException e)
+            catch (NumberFormatException e)
             {
                 println("Please enter a valid integer.");
                 continue;

@@ -31,4 +31,8 @@ public class Item
     public int getValue() {
         return value;
     }
+
+    public int getSellingPrice() {
+        return (int)Math.round(value * 1.2);
+    }
 }
