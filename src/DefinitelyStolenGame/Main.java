@@ -35,10 +35,10 @@ public class Main
         while (true)
         {
             // TODO: Add events that happen before the shop opens each day.
-            visitorLeft = visitorNum;
+            gameSystem.startDay(day);
+            visitorLeft = gameSystem.getWaitingCount();
             displayShop();
             askPlayerAction(new String[] { "Open the shop." });
-            gameSystem.startDay();
 
             while (gameSystem.hasVisitors())
             {
@@ -48,6 +48,10 @@ public class Main
                 visitorLeft--;
                 println(visitor.getName() + " arrived.");
                 tradingSystem.serveVisitor(visitor);
+                if (tradingSystem.isGameOver())
+                {
+                    return;
+                }
             }
 
             println("All visitors are done.");

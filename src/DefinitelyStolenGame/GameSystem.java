@@ -8,11 +8,13 @@ public class GameSystem
 {
     private int visitorNum;
     private LinkedChain<Visitor> visitors;
+    private final SpecialCustomer landowner;
 
     public GameSystem(int visitorNum)
     {
         this.visitorNum = visitorNum;
         visitors = new LinkedChain<>();
+        landowner = new SpecialCustomer(SCList.LANDOWNER);
     }
 
     /**
@@ -20,11 +22,30 @@ public class GameSystem
      */
     public void startDay()
     {
+        startDay(1);
+    }
+
+    /** Creates normal visitors and appends the landowner every seventh day. */
+    public void startDay(int day)
+    {
+        if (day < 1)
+        {
+            throw new IllegalArgumentException("Day must be positive.");
+        }
         visitors.clear();
         for (int i = 1; i <= visitorNum; i++)
         {
             visitors.addToEnd(generateRandomVisitor(i));
         }
+        if (day % 7 == 0)
+        {
+            visitors.addToEnd(landowner);
+        }
+    }
+
+    public int getWaitingCount()
+    {
+        return visitors.size();
     }
 
     public boolean hasVisitors()

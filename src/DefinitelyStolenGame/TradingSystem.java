@@ -7,6 +7,12 @@ public class TradingSystem
 {
     private LinkedChain<Item> inventory;
     private int coins;
+    private boolean gameOver;
+
+    // These belong only to the landowner event, not to every special customer.
+    private int landownerRent = 200;
+    private boolean landownerWaiverUsed;
+    private static final int LANDOWNER_RENT_INCREASE = 10;
 
     public TradingSystem(LinkedChain<Item> inventory, int coins)
     {
@@ -17,6 +23,26 @@ public class TradingSystem
     public int getCoins()
     {
         return coins;
+    }
+
+    public boolean isGameOver()
+    {
+        return gameOver;
+    }
+
+    /** Deducts rent only if the whole payment is affordable. */
+    public boolean payRent(int amount)
+    {
+        if (amount < 0)
+        {
+            throw new IllegalArgumentException("Rent cannot be negative.");
+        }
+        if (amount > coins)
+        {
+            return false;
+        }
+        coins -= amount;
+        return true;
     }
 
     /** Inventory and money are available only on the shop screen. */
@@ -45,7 +71,11 @@ public class TradingSystem
 
     public void serveVisitor(Visitor visitor)
     {
-        if (visitor instanceof Seller)
+        if (visitor instanceof SpecialCustomer)
+        {
+            serveSpecialCustomer((SpecialCustomer)visitor);
+        }
+        else if (visitor instanceof Seller)
         {
             serveSeller((Seller)visitor);
         }
@@ -53,6 +83,62 @@ public class TradingSystem
         {
             serveBuyer((Buyer)visitor);
         }
+    }
+
+    /** Routes each special customer to its own event. */
+    private void serveSpecialCustomer(SpecialCustomer customer)
+    {
+        switch (customer.getCustomerType())
+        {
+            case LANDOWNER:
+                serveLandowner(customer);
+                break;
+            default:
+                customer.say(customer.getDialogue());
+                break;
+        }
+    }
+
+    /** Handles the landowner's rent and one-time waiver across weekly visits. */
+    private void serveLandowner(SpecialCustomer landowner)
+    {
+        landowner.say(landowner.getDialogue());
+        int answer = askPlayerAction(new String[] {
+            "Pretty good", "Not going well" });
+        if (answer == 1)
+        {
+            landowner.say("Great! Then hand over my " + landownerRent + "G rent.");
+        }
+        else
+        {
+            landowner.say("I don't care. Give me my " + landownerRent + "G rent.");
+        }
+
+        int action = askPlayerAction(new String[] {
+            "Pay rent (" + landownerRent + "G)", "Postpone payment" });
+        if (action == 1 && payRent(landownerRent))
+        {
+            println("Paid " + landownerRent + "G in rent. Coins: " + coins + "G");
+            landownerRent += LANDOWNER_RENT_INCREASE;
+            landowner.say("All right. Next week's rent is " + landownerRent
+                + "G. See you then.");
+            return;
+        }
+        if (action == 1)
+        {
+            println("You do not have enough coins to pay the rent.");
+        }
+        if (!landownerWaiverUsed)
+        {
+            landownerWaiverUsed = true;
+            landowner.say("Seriously? Fine, I'll let this week slide. Just this once. "
+                + "Next week, bring " + landownerRent + "G.");
+            println("This week's rent was waived. Your coins are unchanged.");
+            return;
+        }
+        landowner.say("You already had your one chance. You can't keep the shop anymore.");
+        println("Game over. You lost the shop after a second unpaid rent visit.");
+        gameOver = true;
     }
 
     private void serveSeller(Seller seller)

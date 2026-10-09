@@ -26,6 +26,9 @@ public class Visitor
      * @param message the visitor's words
      */
     public void say(String message) {
+        if (message == null) {
+            message = "...";
+        }
         ToolClass.println(name + ": " + message);
     }
 }
