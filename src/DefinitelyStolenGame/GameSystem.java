@@ -84,7 +84,8 @@ public class GameSystem
         for (int i = 0; i < 3; i++)
         {
             int itemIndex = randomInt(0, availableItems.length - 1);
-            sellerInventory.add(new Item(availableItems[itemIndex]));
+            boolean authentic = randomInt(0, 9) != 0;
+            sellerInventory.add(new Item(availableItems[itemIndex], authentic));
         }
         String name = "Scavenger";
         String dialogue = "Picked up some good stuff. Wanna take a look?";

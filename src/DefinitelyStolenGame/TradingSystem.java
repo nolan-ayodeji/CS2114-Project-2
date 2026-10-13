@@ -3,8 +3,7 @@ package DefinitelyStolenGame;
 import static DefinitelyStolenGame.ToolClass.*;
 
 /** Handles the player's money, purchases, sales, and counter menus. */
-public class TradingSystem
-{
+public class TradingSystem {
     private LinkedChain<Item> inventory;
     private int coins;
     private boolean gameOver;
@@ -14,82 +13,81 @@ public class TradingSystem
     private boolean landownerWaiverUsed;
     private static final int LANDOWNER_RENT_INCREASE = 10;
 
-    public TradingSystem(LinkedChain<Item> inventory, int coins)
-    {
-        this.inventory = inventory;
-        this.coins = coins;
+    private int baseRent;
+
+    public TradingSystem(LinkedChain<Item> inventory, int coins) {
+        this(inventory, coins, 0);
     }
 
-    public int getCoins()
-    {
+
+    public TradingSystem(LinkedChain<Item> inventory, int coins,
+        int extraRent) {
+        this.inventory = inventory;
+        this.coins = coins;
+        this.baseRent = 200;
+        landownerRent = baseRent + extraRent;
+    }
+
+
+    public int getCoins() {
         return coins;
     }
 
-    public boolean isGameOver()
-    {
+
+    public boolean isGameOver() {
         return gameOver;
     }
 
+
     /** Deducts rent only if the whole payment is affordable. */
-    public boolean payRent(int amount)
-    {
-        if (amount < 0)
-        {
+    public boolean payRent(int amount) {
+        if (amount < 0) {
             throw new IllegalArgumentException("Rent cannot be negative.");
         }
-        if (amount > coins)
-        {
+        if (amount > coins) {
             return false;
         }
         coins -= amount;
         return true;
     }
 
+
     /** Inventory and money are available only on the shop screen. */
-    public int askPlayerAction(String[] temporaryOptions)
-    {
+    public int askPlayerAction(String[] temporaryOptions) {
         String[] options = getTempOptions(temporaryOptions);
-        while (true)
-        {
+        while (true) {
             int choice = askOption(options, 1, options.length);
             String action = options[choice - 1];
-            if ("Check Inventory".equals(action))
-            {
+            if ("Check Inventory".equals(action)) {
                 browseInventory();
             }
-            else if ("Check Coins".equals(action))
-            {
+            else if ("Check Coins".equals(action)) {
                 println("Coins: " + coins + "G");
                 askOption("[-1] Back to store", -1, -1);
             }
-            else
-            {
+            else {
                 return choice;
             }
         }
     }
 
-    public void serveVisitor(Visitor visitor)
-    {
-        if (visitor instanceof SpecialCustomer)
-        {
+
+    public void serveVisitor(Visitor visitor) {
+        if (visitor instanceof SpecialCustomer) {
             serveSpecialCustomer((SpecialCustomer)visitor);
         }
-        else if (visitor instanceof Seller)
-        {
+        else if (visitor instanceof Seller) {
             serveSeller((Seller)visitor);
         }
-        else if (visitor instanceof Buyer)
-        {
+        else if (visitor instanceof Buyer) {
             serveBuyer((Buyer)visitor);
         }
     }
 
+
     /** Routes each special customer to its own event. */
-    private void serveSpecialCustomer(SpecialCustomer customer)
-    {
-        switch (customer.getCustomerType())
-        {
+    private void serveSpecialCustomer(SpecialCustomer customer) {
+        switch (customer.getCustomerType()) {
             case LANDOWNER:
                 serveLandowner(customer);
                 break;
@@ -99,64 +97,64 @@ public class TradingSystem
         }
     }
 
-    /** Handles the landowner's rent and one-time waiver across weekly visits. */
-    private void serveLandowner(SpecialCustomer landowner)
-    {
+
+    /**
+     * Handles the landowner's rent and one-time waiver across weekly visits.
+     */
+    private void serveLandowner(SpecialCustomer landowner) {
         landowner.say(landowner.getDialogue());
-        int answer = askPlayerAction(new String[] {
-            "Pretty good", "Not going well" });
-        if (answer == 1)
-        {
-            landowner.say("Great! Then hand over my " + landownerRent + "G rent.");
+        int answer = askPlayerAction(new String[] { "Pretty good",
+            "Not going well" });
+        if (answer == 1) {
+            landowner.say("Great! Then hand over my " + landownerRent
+                + "G rent.");
         }
-        else
-        {
-            landowner.say("I don't care. Give me my " + landownerRent + "G rent.");
+        else {
+            landowner.say("I don't care. Give me my " + landownerRent
+                + "G rent.");
         }
 
-        int action = askPlayerAction(new String[] {
-            "Pay rent (" + landownerRent + "G)", "Postpone payment" });
-        if (action == 1 && payRent(landownerRent))
-        {
-            println("Paid " + landownerRent + "G in rent. Coins: " + coins + "G");
+        int action = askPlayerAction(new String[] { "Pay rent (" + landownerRent
+            + "G)", "Postpone payment" });
+        if (action == 1 && payRent(landownerRent)) {
+            println("Paid " + landownerRent + "G in rent. Coins: " + coins
+                + "G");
             landownerRent += LANDOWNER_RENT_INCREASE;
             landowner.say("All right. Next week's rent is " + landownerRent
                 + "G. See you then.");
             return;
         }
-        if (action == 1)
-        {
+        if (action == 1) {
             println("You do not have enough coins to pay the rent.");
         }
-        if (!landownerWaiverUsed)
-        {
+        if (!landownerWaiverUsed) {
             landownerWaiverUsed = true;
-            landowner.say("Seriously? Fine, I'll let this week slide. Just this once. "
-                + "Next week, bring " + landownerRent + "G.");
+            landowner.say(
+                "Seriously? Fine, I'll let this week slide. Just this once. "
+                    + "Next week, bring " + landownerRent + "G.");
             println("This week's rent was waived. Your coins are unchanged.");
             return;
         }
-        landowner.say("You already had your one chance. You can't keep the shop anymore.");
-        println("Game over. You lost the shop after a second unpaid rent visit.");
+        landowner.say(
+            "You already had your one chance. You can't keep the shop anymore.");
+        println(
+            "Game over. You lost the shop after a second unpaid rent visit.");
         gameOver = true;
     }
 
-    private void serveSeller(Seller seller)
-    {
+
+    private void serveSeller(Seller seller) {
         String dialogue = seller.getDialogue();
-        while (!seller.getItems().isEmpty())
-        {
+        while (!seller.getItems().isEmpty()) {
             seller.say(dialogue);
             seller.say("Buy the whole lot and I'll take 30% off.");
-            int action = askPlayerAction(new String[] {
-                "View Counter", "Dismiss Customer"});
-            if (action == 2)
-            {
+            int action = askPlayerAction(new String[] { "View Counter",
+                "Dismiss Customer" });
+            if (action == 2) {
                 return;
             }
             boolean purchased = sellerCounter(seller);
-            if (purchased)
-            {
+            if (purchased) {
                 dialogue = "Good choice! Anything else you'd like?";
             }
         }
@@ -164,79 +162,67 @@ public class TradingSystem
         println(seller.getName() + " left.");
     }
 
+
     /** Returns to the shop after a successful purchase or an explicit exit. */
-    private boolean sellerCounter(Seller seller)
-    {
-        while (true)
-        {
+    private boolean sellerCounter(Seller seller) {
+        while (true) {
             println("Enter item numbers to buy.\nSeparate multiple item numbers"
                 + " with commas, without spaces (e.g. 1,2,3).");
             seller.show();
             println("[0] Buy everything(" + seller.getWholesalePrice() + "G)");
             println("[-1] Exit Counter");
             String input = readInput();
-            if ("-1".equals(input))
-            {
+            if ("-1".equals(input)) {
                 return false;
             }
-            Item[] items = seller.getItems().toArray(
-                new Item[seller.getItems().size()]);
-            try
-            {
-                boolean[] selected = parseSelection(input, items.length,
-                    "0".equals(input));
+            Item[] items = seller.getItems().toArray(new Item[seller.getItems()
+                .size()]);
+            try {
+                boolean[] selected = parseSelection(input, items.length, "0"
+                    .equals(input));
                 LinkedChain<Item> purchase = new LinkedChain<>();
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (selected[i])
-                    {
+                for (int i = 0; i < items.length; i++) {
+                    if (selected[i]) {
                         purchase.add(items[i]);
                     }
                 }
                 int before = coins;
-                if (buyItems(seller, purchase))
-                {
-                    println("Paid " + (before - coins) + "G. Coins: " + coins + "G");
+                if (buyItems(seller, purchase)) {
+                    println("Paid " + (before - coins) + "G. Coins: " + coins
+                        + "G");
                     return true;
                 }
                 println("You do not have enough coins. Nothing was purchased.");
             }
-            catch (IllegalArgumentException e)
-            {
+            catch (IllegalArgumentException e) {
                 println("Invalid selection. Use the displayed item numbers.");
             }
         }
     }
 
+
     // Validates the entire purchase before moving any money or goods.
-    public boolean buyItems(Seller seller, LinkedChain<Item> purchase)
-    {
+    public boolean buyItems(Seller seller, LinkedChain<Item> purchase) {
         Item[] items = purchase.toArray(new Item[purchase.size()]);
-        if (items.length == 0)
-        {
+        if (items.length == 0) {
             return false;
         }
         LinkedChain<Item> checked = new LinkedChain<>();
         int price = 0;
-        for (Item item : items)
-        {
-            if (!seller.getItems().contains(item) || checked.contains(item))
-            {
+        for (Item item : items) {
+            if (!seller.getItems().contains(item) || checked.contains(item)) {
                 return false;
             }
             checked.add(item);
-            price += item.getValue();
+            price += item.getPurchasePrice();
         }
-        if (items.length == seller.getItems().size())
-        {
+        if (items.length == seller.getItems().size()) {
             price = seller.getWholesalePrice();
         }
-        if (price > coins)
-        {
+        if (price > coins) {
             return false;
         }
-        for (Item item : items)
-        {
+        for (Item item : items) {
             seller.getItems().remove(item);
             inventory.add(item);
         }
@@ -244,23 +230,21 @@ public class TradingSystem
         return true;
     }
 
-    private void serveBuyer(Buyer buyer)
-    {
-        // Listing state lasts for this visit, including exits from either screen.
+
+    private void serveBuyer(Buyer buyer) {
+        // Listing state lasts for this visit, including exits from either
+        // screen.
         LinkedChain<Item> listed = new LinkedChain<>();
         String dialogue = buyer.getDialogue();
-        while (buyer.getBudget() > 0)
-        {
+        while (buyer.getBudget() > 0) {
             buyer.say(dialogue);
             println("Remaining budget: " + buyer.getBudget() + "G");
-            int action = askPlayerAction(new String[] {
-                "Stock Counter", "Dismiss Customer" });
-            if (action == 2)
-            {
+            int action = askPlayerAction(new String[] { "Stock Counter",
+                "Dismiss Customer" });
+            if (action == 2) {
                 return;
             }
-            if (buyerCounter(buyer, listed))
-            {
+            if (buyerCounter(buyer, listed)) {
                 dialogue = "Thanks! Got anything else I might need?";
             }
         }
@@ -268,99 +252,85 @@ public class TradingSystem
         println(buyer.getName() + " left.");
     }
 
-    private boolean buyerCounter(Buyer buyer, LinkedChain<Item> listed)
-    {
-        while (true)
-        {
-            println("Enter item numbers to list or unlist.\nSeparate multiple item"
-                + " numbers with commas, without spaces (e.g. 1,2,3).");
+
+    private boolean buyerCounter(Buyer buyer, LinkedChain<Item> listed) {
+        while (true) {
+            println(
+                "Enter item numbers to list or unlist.\nSeparate multiple item"
+                    + " numbers with commas, without spaces (e.g. 1,2,3).");
             displayInventory(listed);
             println("[0] Review Transaction");
             println("[-1] Exit Counter");
             String input = readInput();
-            if ("-1".equals(input))
-            {
+            if ("-1".equals(input)) {
                 return false;
             }
-            if ("0".equals(input))
-            {
-                if (listed.isEmpty())
-                {
+            if ("0".equals(input)) {
+                if (listed.isEmpty()) {
                     println("No items are listed yet.");
                     continue;
                 }
                 return reviewSale(buyer, listed);
             }
             Item[] items = inventory.toArray(new Item[inventory.size()]);
-            try
-            {
+            try {
                 boolean[] selected = parseSelection(input, items.length, false);
-                for (int i = 0; i < items.length; i++)
-                {
-                    if (!selected[i])
-                    {
+                for (int i = 0; i < items.length; i++) {
+                    if (!selected[i]) {
                         continue;
                     }
                     Item item = items[i];
-                    if (listed.contains(item))
-                    {
+                    if (listed.contains(item)) {
                         listed.remove(item);
                     }
-                    else if (!buyer.getNeed().equals(item.getType()))
-                    {
-                        buyer.say("I don't need " + item.getName() + " right now.");
+                    else if (!buyer.getNeed().equals(item.getType())) {
+                        buyer.say("I don't need " + item.getName()
+                            + " right now.");
                     }
-                    else
-                    {
+                    else {
                         listed.add(item);
                     }
                 }
             }
-            catch (IllegalArgumentException e)
-            {
+            catch (IllegalArgumentException e) {
                 println("Invalid selection. Use the displayed item numbers.");
             }
         }
     }
 
+
     // -1 returns to the shop, leaving the listing intact.
-    private boolean reviewSale(Buyer buyer, LinkedChain<Item> listed)
-    {
-        while (true)
-        {
+    private boolean reviewSale(Buyer buyer, LinkedChain<Item> listed) {
+        while (true) {
             int total = 0;
-            for (Item item : listed.toArray(new Item[listed.size()]))
-            {
-                println(" - " + item.getName() + " " + item.getSellingPrice() + "G");
+            for (Item item : listed.toArray(new Item[listed.size()])) {
+                println(" - " + item.getName() + " " + item.getSellingPrice()
+                    + "G");
                 total += item.getSellingPrice();
             }
             println("Total: " + total + "G");
-            int action = askOption("[1] Confirm Transaction\n[-1] Exit Transaction",
-                -1, 1);
-            if (action == -1)
-            {
+            int action = askOption(
+                "[1] Confirm Transaction\n[-1] Exit Transaction", -1, 1);
+            if (action == -1) {
                 return false;
             }
-            if (action == 0)
-            {
+            if (action == 0) {
                 println("Please enter 1 or -1.");
                 continue;
             }
-            if (total > buyer.getBudget())
-            {
+            if (total > buyer.getBudget()) {
                 buyer.say("I've only got " + buyer.getBudget()
                     + "G left. That's all I can pay."
                     + " Still want to sell it all?");
                 if (askOption("[1] Confirm Transaction\n[2] Cancel Transaction",
-                    1, 2) == 2)
-                {
+                    1, 2) == 2) {
                     continue;
                 }
             }
             int before = coins;
-            if (sellItems(buyer, listed, true))
-            {
-                println("Received " + (coins - before) + "G. Coins: " + coins + "G");
+            if (sellItems(buyer, listed, true)) {
+                println("Received " + (coins - before) + "G. Coins: " + coins
+                    + "G");
                 return true;
             }
             println("The sale could not be completed.");
@@ -368,34 +338,31 @@ public class TradingSystem
         }
     }
 
+
     /** Sells all listed items, with explicit consent to accept a budget cap. */
-    public boolean sellItems(Buyer buyer, LinkedChain<Item> listed,
-        boolean acceptBudgetLimit)
-    {
-        if (listed.isEmpty() || buyer.getBudget() <= 0)
-        {
+    public boolean sellItems(
+        Buyer buyer,
+        LinkedChain<Item> listed,
+        boolean acceptBudgetLimit) {
+        if (listed.isEmpty() || buyer.getBudget() <= 0) {
             return false;
         }
         int total = 0;
         LinkedChain<Item> checked = new LinkedChain<>();
         Item[] items = listed.toArray(new Item[listed.size()]);
-        for (Item item : items)
-        {
-            if (!inventory.contains(item) || checked.contains(item)
-                || !buyer.getNeed().equals(item.getType()))
-            {
+        for (Item item : items) {
+            if (!inventory.contains(item) || checked.contains(item) || !buyer
+                .getNeed().equals(item.getType())) {
                 return false;
             }
             checked.add(item);
             total += item.getSellingPrice();
         }
-        if (total > buyer.getBudget() && !acceptBudgetLimit)
-        {
+        if (total > buyer.getBudget() && !acceptBudgetLimit) {
             return false;
         }
         int payment = Math.min(total, buyer.getBudget());
-        for (Item item : items)
-        {
+        for (Item item : items) {
             inventory.remove(item);
         }
         buyer.spend(payment);
@@ -404,46 +371,43 @@ public class TradingSystem
         return true;
     }
 
-    /** Shows counter items at their selling prices, retaining listing markers. */
-    public void displayInventory(LinkedChain<Item> listed)
-    {
+
+    /**
+     * Shows counter items at their selling prices, retaining listing markers.
+     */
+    public void displayInventory(LinkedChain<Item> listed) {
         println("Inventory:");
         Item[] items = inventory.toArray(new Item[inventory.size()]);
-        if (items.length == 0)
-        {
+        if (items.length == 0) {
             println("(empty)");
         }
-        for (int i = 0; i < items.length; i++)
-        {
+        for (int i = 0; i < items.length; i++) {
             Item item = items[i];
-            String marker = listed != null && listed.contains(item) ? " (Listed)" : "";
-            println("[" + (i + 1) + "] " + item.getName() + " "
-                + item.getSellingPrice() + "G" + marker);
+            String marker = listed != null && listed.contains(item)
+                ? " (Listed)"
+                : "";
+            println("[" + (i + 1) + "] " + item.getName() + " " + item
+                .getSellingPrice() + "G" + marker);
         }
     }
 
+
     /** Browses names and item details without changing the current listing. */
-    public void browseInventory()
-    {
+    public void browseInventory() {
         Item[] items = inventory.toArray(new Item[inventory.size()]);
-        while (true)
-        {
+        while (true) {
             println("Inventory:");
-            if (items.length == 0)
-            {
+            if (items.length == 0) {
                 println("(empty)");
             }
-            for (int i = 0; i < items.length; i++)
-            {
+            for (int i = 0; i < items.length; i++) {
                 println("[" + (i + 1) + "] " + items[i].getName());
             }
             int choice = askOption("[-1] Back to store", -1, items.length);
-            if (choice == -1)
-            {
+            if (choice == -1) {
                 return;
             }
-            if (choice == 0)
-            {
+            if (choice == 0) {
                 println("Choose an item number or -1 to return to the store.");
                 continue;
             }
@@ -452,24 +416,70 @@ public class TradingSystem
             println("Base price: " + item.getValue() + "G");
             println(item.getDescription());
             println("");
+            
+            inspectItem(item);
             askOption("[-1] Back to inventory", -1, -1);
         }
     }
+    
+    private void inspectItem(Item item) {
+        if(!item.isInspected()) {
+            int action = askOption("[1] Inspect Item\n[-1] Back to inventory", -1, 1);
+            
+            if(action==1) {
+                boolean authentic = item.inspect();
+                
+                if(authentic) {
+                    println("Inspection complete: this item appears authentic.");
+                }
+                else {
+                    println("Inspection complete: this item is counterfeit!");
+                    int relabel=askOption("[1] Relabel as authentic\n[-1] Leave it as counterfeit", -1, 1);
+                    
+                    if(relabel==1) {
+                        item.relabelAsAuthentic();
+                        println("You relabeled the item as authentic.");
+                    }
+                    else {
+                        println("The item remains marked as counterfeit.");
+                    }
+                }
+            }
+            else {
+                println("You did not inspect the item.");
+            }
+        }
+        else if(!item.isAuthentic()&&!item.isRelabeled()) {
+            println("This item is a know counterfeit.");
+            
+            int relabel = askOption("[1] Relabel as authentic\n[-1] Back to inventory", -1, 1);
+            
+            if(relabel == 1) {
+                item.relabelAsAuthentic();
+                println("You relabeled the item as authentic.");
+            }
+        }
+        else if(item.isRelabeled()) {
+            println("This item has been relabeled as authentic.");
+        }
+        else {
+            println("This item has already been inspected and appears authentic.");
+        }
+    }
 
-    /** Validates comma-separated numbers before the caller changes any state. */
-    private boolean[] parseSelection(String text, int size, boolean selectAll)
-    {
+
+    /**
+     * Validates comma-separated numbers before the caller changes any state.
+     */
+    private boolean[] parseSelection(String text, int size, boolean selectAll) {
         boolean[] selected = new boolean[size];
-        if (selectAll)
-        {
+        if (selectAll) {
             java.util.Arrays.fill(selected, true);
             return selected;
         }
-        for (String token : text.split(",", -1))
-        {
+        for (String token : text.split(",", -1)) {
             int number = Integer.parseInt(token.trim());
-            if (number < 1 || number > size)
-            {
+            if (number < 1 || number > size) {
                 throw new IllegalArgumentException("Invalid item number");
             }
             selected[number - 1] = true;
