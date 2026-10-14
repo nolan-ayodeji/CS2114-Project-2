@@ -43,9 +43,11 @@ public class Main {
             displayShop();
             askPlayerAction(new String[] { "Open the shop." });
 
+            String customerOption = "Serve the first customer";
             while (gameSystem.hasVisitors()) {
                 displayShop();
-                askPlayerAction(new String[] { "Next Customer" });
+                askPlayerAction(new String[] { customerOption });
+                customerOption = "Serve the next customer";
                 Visitor visitor = gameSystem.nextVisitor();
                 visitorLeft--;
                 println(visitor.getName() + " arrived.");
