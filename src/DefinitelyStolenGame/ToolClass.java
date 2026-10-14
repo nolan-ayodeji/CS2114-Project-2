@@ -147,7 +147,7 @@ public final class ToolClass
         while (true)
         {
             println(prompt);
-            print("> ");
+            print("> Enter choice: ");
             try
             {
                 option = Integer.parseInt(readInput());
@@ -183,10 +183,11 @@ public final class ToolClass
         int option = -1;
         while (true)
         {
+            println("=== MENU ===");
             for (int i = 0; i < options.length; i++) {
-                println("[" + (i + 1) + "] " + options[i]);
+                println(" [" + (i + 1) + "] " + options[i]);
             }
-            print("\n> ");
+            print("\n> Enter choice: ");
             try
             {
                 option = Integer.parseInt(readInput());

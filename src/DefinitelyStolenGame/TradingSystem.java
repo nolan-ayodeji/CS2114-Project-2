@@ -62,8 +62,10 @@ public class TradingSystem {
                 browseInventory();
             }
             else if ("Check Coins".equals(action)) {
-                println("Coins: " + coins + "G");
-                askOption("[-1] Back to store", -1, -1);
+                println("------------------");
+                println("Balance: " + coins + "G");
+                println("------------------");
+                askOption("[-1] Back to Store", -1, -1);
             }
             else {
                 return choice;
