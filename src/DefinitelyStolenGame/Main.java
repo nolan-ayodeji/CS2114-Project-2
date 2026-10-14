@@ -37,6 +37,9 @@ public class Main {
             int startingCoins = tradingSystem.getCoins();
             gameSystem.startDay(day);
             visitorLeft = gameSystem.getWaitingCount();
+            println("");
+            println("");
+            println("========== DAY " + day + " ==========");
             displayShop();
             askPlayerAction(new String[] { "Open the shop." });
 
@@ -52,6 +55,7 @@ public class Main {
                 }
             }
 
+            println("");
             println("All visitors are done.");
             String[] closeOption = { "Close the shop." };
             askPlayerAction(closeOption);
@@ -101,11 +105,15 @@ public class Main {
         String sign = change >= 0 ? "+" : "";
         int daysUntilLandowner = 7 - (day % 7);
 
-        println("=== Day " + day + " Summary ===");
-        println("Coins: " + coins + "G (" + sign + change + "G today)");
-        println("Items in stock: " + inventory.size());
-        println("Landowner arrives in " + daysUntilLandowner
+        println("");
+        println("------------------");
+        println("  END OF DAY " + day);
+        println("------------------");
+        println("Coins:    " + coins + "G (" + sign + change + "G)");
+        println("Stock:    " + inventory.size() + " items");
+        println("Rent due: in " + daysUntilLandowner
             + (daysUntilLandowner == 1 ? " day" : " days"));
+        println("------------------");
     }
 
 

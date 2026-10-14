@@ -183,6 +183,7 @@ public final class ToolClass
         int option = -1;
         while (true)
         {
+            println("");
             println("=== MENU ===");
             for (int i = 0; i < options.length; i++) {
                 println(" [" + (i + 1) + "] " + options[i]);
