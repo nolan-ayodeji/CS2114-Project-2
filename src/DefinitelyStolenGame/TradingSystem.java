@@ -216,7 +216,7 @@ public class TradingSystem {
                 return false;
             }
             checked.add(item);
-            price += item.getPurchasePrice();
+            price += item.getValue();
         }
         if (items.length == seller.getItems().size()) {
             price = seller.getWholesalePrice();
