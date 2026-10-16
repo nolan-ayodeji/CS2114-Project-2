@@ -79,4 +79,9 @@ public class Item
         }
         return value;
     }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

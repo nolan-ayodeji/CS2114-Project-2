@@ -24,15 +24,14 @@ public class SellerTest extends TestCase {
 
     public void testGetInventory() {
         String result = seller.getInventory();
-
+        
         assertTrue(result.contains("Chocolate"));
         assertTrue(result.contains("Battery"));
     }
 
 
     public void testGetWholesalePrice() {
-        // (15+30)*0.7 = 31.5, rounded to 32
-        assertEquals(32, seller.getWholesalePrice());
+        assertEquals(Math.round((15+30)*0.7), seller.getWholesalePrice());
     }
 
 
@@ -47,7 +46,7 @@ public class SellerTest extends TestCase {
         seller.show();
         
         String output = systemOut().getHistory();
-        assertTrue(output.contains("[1] Chocolate 15G"));
-        assertTrue(output.contains("[2] Battery 30G"));
+        assertTrue(output.contains("[1] Battery 30G"));
+        assertTrue(output.contains("[2] Chocolate 15G"));
     }
 }

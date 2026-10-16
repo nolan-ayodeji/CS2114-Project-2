@@ -72,4 +72,8 @@ public class ItemTest extends TestCase{
         assertFalse(counterfeit.isRelabeled());
         assertEquals(36, counterfeit.getSellingPrice());
     }
+    
+    public void testToString() {
+        assertEquals("Chocolate", authentic.toString());
+    }
 }
