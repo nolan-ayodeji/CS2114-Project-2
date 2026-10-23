@@ -35,8 +35,15 @@ public class Main {
         while (true) {
             // TODO: Add events that happen before the shop opens each day.
             int startingCoins = tradingSystem.getCoins();
+            
+            int extraBuyers = tradingSystem.consumeAdvertisingBonus();
+            gameSystem.startDay(day, extraBuyers);
             gameSystem.startDay(day);
             visitorLeft = gameSystem.getWaitingCount();
+            
+            if(extraBuyers > 0) {
+                println("Your advertisement attracted " + extraBuyers + " extra buyers today!");
+            }
             println("");
             println("");
             println("========== DAY " + day + " ==========");
@@ -61,6 +68,8 @@ public class Main {
             println("All visitors are done.");
             String[] closeOption = { "Close the shop." };
             askPlayerAction(closeOption);
+            tradingSystem.shopForServices();
+            tradingSystem.resolveOvernight();
             displayDaySummary(startingCoins);
             // TODO: Add events that happen after the player closes the shop.
             day++;

@@ -15,7 +15,13 @@ public class TradingSystem {
     private int landownerRent = 200;
     private boolean landownerWaiverUsed;
     private static final int LANDOWNER_RENT_INCREASE = 10;
-
+    
+    private final java.util.EnumSet<ServiceType> purchasedServices = java.util.EnumSet.noneOf(ServiceType.class);
+    private static final int NORMAL_ROBBERY_CHANCE = 25;
+    private static final int GUARDED_ROBBERY_CHANCE = 5;
+    private static final int ADVERTISING_BUYERS = 2;
+    private static final int MAX_STOLEN_ITEMS = 2;
+    
     private int baseRent;
 
     public TradingSystem(LinkedChain<Item> inventory, int coins) {
@@ -543,5 +549,107 @@ public class TradingSystem {
             selected[number - 1] = true;
         }
         return selected;
+    }
+    
+    public boolean hasService(ServiceType service) {
+        return purchasedServices.contains(service);
+    }
+    
+    public boolean buyService(ServiceType service) {
+        if(service == null || hasService(service) || coins < service.getPrice()) {
+            return false;
+        }
+        
+        coins -= service.getPrice();
+        purchasedServices.add(service);
+        return true;
+    }
+    
+    public void shopForServices() {
+        ServiceType[] services = ServiceType.values();
+        
+        while(true) {
+            println("");
+            println("=== SERVICES FOR TONIGHT / TOMORROW ===");
+            println("Coins: "+coins+"G");
+            
+            String[] options = new String[services.length + 1];
+            
+            for(int i = 0; i < services.length; i++) {
+                ServiceType service = services[i];
+                String status = hasService(service) ? " [Purchased]" : "";
+                
+                options[i] = service.getDisplayName() + " (" + service.getPrice() + "G)" + status + " - " + service.getDescription();
+            }
+            options[services.length] = "Finish shopping and go to sleep";
+            
+            int choice = askOption(options, 1, options.length);
+            
+            if(choice == options.length) {
+                return;
+            }
+            
+            ServiceType selected = services[choice - 1];
+            
+            if(hasService(selected)) {
+                println("You already purchased that service.");
+            }
+            else if(buyService(selected)) {
+                print("Purchased " + selected.getDisplayName() + ". Coins: " + coins + "G");
+            }
+            else {
+                println("You do not have enough coins.");
+            }
+        }
+    }
+    
+    public int getRobberyChance() {
+        return hasService(ServiceType.SECURITY) ? GUARDED_ROBBERY_CHANCE : NORMAL_ROBBERY_CHANCE;
+    }
+    
+    public void resolveOvernight() {
+        println("");
+        print("=== OVERNIGHT REPORT ===");
+        
+        if(inventory.isEmpty()) {
+            println("Your sotre had no stock to steal.");
+        }
+        else if(randomInt(1, 100) <= getRobberyChance()) {
+            int numberStolen = randomInt(1, Math.min(MAX_STOLEN_ITEMS, inventory.size()));
+            
+            println("Your store was robbed!");
+            
+            int reimbursement = 0;
+            
+            for(int i = 0; i < numberStolen; i++) {
+                Item stolen = inventory.get(randomInt(0, inventory.size() - 1));
+                
+                inventory.remove(stolen);
+                reimbursement += stolen.getValue();
+                
+                println("Stolen: " + stolen.getName());
+            }
+            if(hasService(ServiceType.STOCK_INSURANCE)) {
+                coins+=reimbursement;
+                println("Insurance reimbursed "+reimbursement + "G.");
+            }
+            else {
+                println("You had no stock insurance.");
+            }
+        }
+        else {
+            println("No stock was stolen tonight.");
+        }
+        
+        purchasedServices.remove(ServiceType.STOCK_INSURANCE);
+        purchasedServices.remove(ServiceType.SECURITY);
+    }
+    
+    public int consumeAdvertisingBonus() {
+        if(purchasedServices.remove(ServiceType.ADVERTISING)) {
+            return ADVERTISING_BUYERS;
+        }
+        
+        return 0;
     }
 }

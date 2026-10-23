@@ -25,17 +25,34 @@ public class GameSystem
         startDay(1);
     }
 
+    public void startDay(int day) {
+        startDay(day, 0);
+    }
+    
     /** Creates normal visitors and appends the landowner every seventh day. */
-    public void startDay(int day)
+    public void startDay(int day, int extraBuyers)
     {
         if (day < 1)
         {
             throw new IllegalArgumentException("Day must be positive.");
         }
+        
+        if(extraBuyers < 0) {
+            throw new IllegalArgumentException("Extra buyers can't be negative.");
+        }
+        
         visitors.clear();
+        
         for (int i = 1; i <= visitorNum; i++)
         {
             visitors.addToEnd(generateRandomVisitor(i));
+        }
+        
+        for(int i = 0; i < extraBuyers; i++) {
+            String need = randomNeed();
+            int budget = randomInt(50, 200);
+            
+            visitors.addToEnd(new Buyer("Advertisement Customer", "I saw your advertisement! Got " + describeNeed(need) + "? I've got " + budget + "G to spend.", need, budget));
         }
         if (day % 7 == 0)
         {
