@@ -72,7 +72,31 @@ public class GameSystemTest extends TestCase {
         while (gameSystem.hasVisitors()) {
             Visitor visitor = gameSystem.nextVisitor();
             assertNotNull(visitor);
-            assertTrue(visitor instanceof Buyer || visitor instanceof Seller);
+            assertTrue(visitor instanceof Buyer || visitor instanceof Seller
+                || (visitor instanceof SpecialCustomer
+                    && ((SpecialCustomer)visitor).getCustomerType()
+                        == SCList.SMUGGLER));
         }
+    }
+
+
+    public void testSmugglersAppear() {
+        boolean foundSmuggler = false;
+
+        // With a 1 in 10 chance per visitor, 100 days makes missing one
+        // practically impossible.
+        for (int day = 1; day <= 100 && !foundSmuggler; day++) {
+            gameSystem.startDay(day);
+            while (gameSystem.hasVisitors()) {
+                Visitor visitor = gameSystem.nextVisitor();
+                if (visitor instanceof SpecialCustomer
+                    && ((SpecialCustomer)visitor).getCustomerType()
+                        == SCList.SMUGGLER) {
+                    foundSmuggler = true;
+                }
+            }
+        }
+
+        assertTrue(foundSmuggler);
     }
 }

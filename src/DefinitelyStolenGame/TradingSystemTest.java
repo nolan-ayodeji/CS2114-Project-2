@@ -176,4 +176,42 @@ public class TradingSystemTest extends TestCase {
         assertTrue(output.contains("Inventory:"));
         assertTrue(output.contains("Chocolate"));
     }
+
+
+    public void testReputationStartsAtZero() {
+        assertEquals(0, system.getPoliceRep());
+        assertEquals(0, system.getBlackMarketRep());
+    }
+
+
+    public void testReportSmuggler() {
+        system.reportSmuggler();
+
+        assertEquals(1, system.getPoliceRep());
+        assertEquals(-1, system.getBlackMarketRep());
+        assertEquals(520, system.getCoins());
+    }
+
+
+    public void testReportSmugglerMultipleTimes() {
+        system.reportSmuggler();
+        system.reportSmuggler();
+        system.reportSmuggler();
+
+        assertEquals(3, system.getPoliceRep());
+        assertEquals(-3, system.getBlackMarketRep());
+        assertEquals(560, system.getCoins());
+    }
+
+
+    public void testLetSmugglerGo() {
+        Item gift = system.letSmugglerGo();
+
+        assertNotNull(gift);
+        assertTrue(inventory.contains(gift));
+        assertEquals(2, inventory.size());
+        assertEquals(1, system.getBlackMarketRep());
+        assertEquals(0, system.getPoliceRep());
+        assertEquals(500, system.getCoins());
+    }
 }

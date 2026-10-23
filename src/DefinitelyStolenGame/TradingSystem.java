@@ -7,6 +7,9 @@ public class TradingSystem {
     private LinkedChain<Item> inventory;
     private int coins;
     private boolean gameOver;
+    private int policeRep;
+    private int blackMarketRep;
+    private static final int REPORT_REWARD = 20;
 
     // These belong only to the landowner event, not to every special customer.
     private int landownerRent = 200;
@@ -36,6 +39,36 @@ public class TradingSystem {
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+
+    public int getPoliceRep() {
+        return policeRep;
+    }
+
+
+    public int getBlackMarketRep() {
+        return blackMarketRep;
+    }
+
+
+    /** Rewards the player for reporting a smuggler. */
+    public void reportSmuggler() {
+        policeRep++;
+        blackMarketRep--;
+        coins += REPORT_REWARD;
+    }
+
+
+    /** Earns black market trust and a free item for keeping quiet. */
+    public Item letSmugglerGo() {
+        blackMarketRep++;
+        ItemLibrary[] items = ItemLibrary.values();
+        // 25% chance the smuggler's gift is counterfeit
+        boolean authentic = randomInt(1, 4) != 1;
+        Item gift = new Item(items[randomInt(0, items.length - 1)], authentic);
+        inventory.add(gift);
+        return gift;
     }
 
 
@@ -93,6 +126,9 @@ public class TradingSystem {
             case LANDOWNER:
                 serveLandowner(customer);
                 break;
+            case SMUGGLER:
+                serveSmuggler(customer);
+                break;
             default:
                 customer.say(customer.getDialogue());
                 break;
@@ -142,6 +178,26 @@ public class TradingSystem {
         println(
             "Game over. You lost the shop after a second unpaid rent visit.");
         gameOver = true;
+    }
+
+
+    /** Lets the player report a smuggler to the police or let them go. */
+    private void serveSmuggler(SpecialCustomer smuggler) {
+        smuggler.say(smuggler.getDialogue());
+        int action = askPlayerAction(new String[] { "Report to the police",
+            "Let them go" });
+        if (action == 1) {
+            reportSmuggler();
+            println("The police thank you and pay a " + REPORT_REWARD
+                + "G reward. Police rep: " + policeRep);
+        }
+        else {
+            Item gift = letSmugglerGo();
+            smuggler.say("Smart choice. I was never here.");
+            println("The Smuggler left " + gift.getName()
+                + " on your counter as thanks.");
+        }
+        println(smuggler.getName() + " left.");
     }
 
 

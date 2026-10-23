@@ -64,10 +64,16 @@ public class GameSystem
     }
 
     /**
-     * Creates a buyer or seller with data for this visit.
+     * Creates a buyer, seller, or occasional smuggler for this visit.
      */
     private Visitor generateRandomVisitor(int number)
     {
+        // 1 in 10 chance this customer is a smuggler
+        if (randomInt(1, 10) == 1)
+        {
+            return new SpecialCustomer(SCList.SMUGGLER);
+        }
+
         // Generate buyer or seller randomly
         if (randomInt(0, 1) == 0)
         {

@@ -113,6 +113,8 @@ public class Main {
         println("------------------");
         println("Coins:    " + coins + "G (" + sign + change + "G)");
         println("Stock:    " + inventory.size() + " items");
+        println("Reputation: Police " + tradingSystem.getPoliceRep()
+            + " | Black market " + tradingSystem.getBlackMarketRep());
         println("Rent due: in " + daysUntilLandowner
             + (daysUntilLandowner == 1 ? " day" : " days"));
         println("------------------");

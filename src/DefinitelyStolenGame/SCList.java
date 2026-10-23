@@ -3,7 +3,8 @@ package DefinitelyStolenGame;
 /** Stores the common information for different kinds of special customers. */
 public enum SCList
 {
-    LANDOWNER("Landowner", "How is your business?");
+    LANDOWNER("Landowner", "How is your business?"),
+    SMUGGLER("Smuggler", "Shh.... don't tell anyone I was here.");
 
     private final String name;
     private final String dialogue;
