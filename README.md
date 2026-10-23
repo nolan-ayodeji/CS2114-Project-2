@@ -154,6 +154,7 @@ Stephen uses the commit name chens, Ryan uses ryank24-2026S, and Nolan uses nola
 | Main.java | Stephen; Ryan; Nolan | Stephen implemented the day loop and rent exit with GenAI assistance. Ryan integrated starting characters. Nolan added day summaries and revised the layout. |
 | SCList.java | Stephen | Created the enum with GenAI assistance to support future special customers from our stretch goals; currently defines only the Landowner. |
 | Seller.java | Stephen | Implemented stock access, wholesale pricing, and counter output with GenAI assistance. |
+| ServiceType.java | Ryan | Implemented the nighttime service enum for stock insurance, overnight security, and advertising, including service names, prices, descriptions, and getters. |
 | SpecialCustomer.java | Stephen | Created the Visitor subclass with GenAI assistance to add the Landowner and support the rent-based game-over mechanic. |
 | StartingCharacter.java | Ryan | Added the three character definitions, balances, rent adjustments, and descriptions. |
 | ToolClass.java | Stephen; Nolan | Stephen implemented input and menu helpers with GenAI assistance. Nolan revised menu presentation. |
