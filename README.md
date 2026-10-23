@@ -6,6 +6,10 @@ Repository: https://github.com/nolan-ayodeji/CS2114-Project-2
 
 Prototype reviewed: commit 674574b on main, October 16, 2026.
 
+## System Diagram
+
+![System diagram](docs/system-diagram.png)
+
 ## Compile and Run
 
 ### Requirements
